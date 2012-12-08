@@ -12,14 +12,14 @@ Katamari is a new middleware framework with asynchrony in mind. It is based on t
 
 Run the examples:
 
-git clone git://github.com/nmerouze/katamari.git
-cd katamari
-curl http://cloud.github.com/downloads/nmerouze/katamari/netty-3.5.11.Final.jar > java_lib/netty-3.5.11.Final.jar
-ruby examples/hello_world.rb
+    git clone git://github.com/nmerouze/katamari.git
+    cd katamari
+    curl http://cloud.github.com/downloads/nmerouze/katamari/netty-3.5.11.Final.jar > java_lib/netty-3.5.11.Final.jar
+    ruby examples/hello_world.rb
 
 And in another terminal:
 
-curl http://localhost:8080/
+    curl http://localhost:8080/
 
 # Roadmap
 
