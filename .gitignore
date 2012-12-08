@@ -1,0 +1,5 @@
+.DS_Store
+.bundle
+vendor
+.rbenv-version
+java_lib/*.jar
