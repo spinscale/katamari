@@ -14,6 +14,7 @@ Run the examples:
 
 git clone git://github.com/nmerouze/katamari.git
 cd katamari
+curl https://github.com/downloads/nmerouze/katamari/netty-3.5.11.Final.jar > java_lib/netty-3.5.11.Final.jar
 ruby examples/hello_world.rb
 
 And in another terminal:
