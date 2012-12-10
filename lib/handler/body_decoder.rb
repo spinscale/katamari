@@ -3,10 +3,11 @@ class Katamari::Handler::BodyDecoder < Katamari::Handler::Upstream
 
   def messageReceived(ctx, e)
     env = e.message
-    return unless [:post, :put, :patch].include?(env.request.method)
-    
-    post = HttpPostRequestDecoder.new(env.request.origin)
-    post.body_http_datas.each { |a| env.request.params[a.name] = a.value }
+
+    if [:post, :put, :patch].include?(env.request.method)
+      post = HttpPostRequestDecoder.new(env.request.origin)
+      post.body_http_datas.each { |a| env.request.params[a.name] = a.value }
+    end
 
     ctx.send_upstream(e)
   end

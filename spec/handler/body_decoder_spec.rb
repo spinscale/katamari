@@ -1,9 +1,11 @@
 require 'spec_helper'
 
 describe Katamari::Handler::BodyDecoder do
-  it 'should not fail on GET' do
+  it 'should not set request#params on GET' do
     make_request(org.jboss.netty.handler.codec.http.HttpMethod::GET)
-    expect { @handler.messageReceived(@context, @event) }.to_not raise_error
+    expect(@event.message.request.params).to eq({})
+    @handler.messageReceived(@context, @event)
+    expect(@event.message.request.params).to eq({})
   end
 
   it 'should set request#params' do
