@@ -19,7 +19,7 @@ describe Katamari::Handler::URIDecoder do
   end
 
   it 'should set request#params' do
-    expect(@event.message.request.params).to eq(nil)
+    expect(@event.message.request.params).to eq({})
     @handler.messageReceived(@context, @event)
     expect(@event.message.request.params).to eq('id' => '1')
   end

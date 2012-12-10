@@ -5,4 +5,5 @@ class Katamari::Handler < org.jboss.netty.channel.SimpleChannelHandler
   autoload :RequestDecoder, 'handler/request_decoder'
   autoload :ResponseEncoder, 'handler/response_encoder'
   autoload :URIDecoder, 'handler/uri_decoder'
+  autoload :BodyDecoder, 'handler/body_decoder'
 end
