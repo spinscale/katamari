@@ -1,14 +1,10 @@
-# Katamari (塊)
+# Katamari (塊) Asynchronous Middleware Framework
 
-Asynchronous Middleware Framework with JRuby and Netty
+Rack unified web development in Ruby. It has helped us well but its simplistic API is limiting features such as streaming. [Rails 4.0 has worked around these limits but it's not perfect](http://blog.plataformatec.com.br/2012/06/why-your-web-framework-should-not-adopt-rack-api). Katamari aims to create a new middleware framework with asynchrony in its core, using [Netty](http://netty.io) to achieve great scalability.
 
-# Why?
+WSGI in Python and Ring in Clojure share more or less the same specification than Rack. Since Katamari is based on the JVM, it could be used in Jython or Clojure, but there still need some work.
 
-We just have one middleware framework in Ruby, Rack. But it's not mean to be used with asynchronous librairies, so it has limits (see http://blog.plataformatec.com.br/2012/06/why-your-web-framework-should-not-adopt-rack-api).
-
-Katamari is a new middleware framework with asynchrony in mind. It is based on the awesome Netty library (http://netty.io) but could be ported to Celluloid or EventMachine some time in the future.
-
-# Run (with JRuby 1.7.x)
+# Run (JRuby 1.7.x required)
 
 Run the examples:
 
@@ -23,7 +19,8 @@ And in another terminal:
 
 # Roadmap
 
-* Update & cleanup specs
+* Update & cleanup tests
+* Remove HttpChunkAggregator and enable Chunked Transfer Encoding
 * Add more middlewares
 * Better API
 * Rewrite core in Java (or Mirah) to make it workable with other JVM languages (Clojure, Javascript, Python, Scala, etc)
