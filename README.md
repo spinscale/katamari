@@ -19,7 +19,7 @@ And in another terminal:
 
 # Roadmap
 
-* Update & cleanup tests
+* Update & cleanup tests (+ use Travis CI)
 * Remove HttpChunkAggregator and enable Chunked Transfer Encoding
 * Add more middlewares
 * Better API
