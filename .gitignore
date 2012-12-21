@@ -2,4 +2,5 @@
 .bundle
 vendor
 .rbenv-version
-java_lib/*.jar
+javalib/*.jar
+target

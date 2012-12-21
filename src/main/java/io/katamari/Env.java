@@ -1,0 +1,24 @@
+package io.katamari;
+
+import org.jboss.netty.channel.MessageEvent;
+
+import io.katamari.env.Request;
+import io.katamari.env.Response;
+
+public class Env {
+  private final Request request;
+  private final Response response;
+
+  public Env(MessageEvent e) {
+    this.request = new Request(e);
+    this.response = new Response(e);
+  }
+
+  public Request request() {
+    return request;
+  }
+
+  public Response response() {
+    return response;
+  }
+}

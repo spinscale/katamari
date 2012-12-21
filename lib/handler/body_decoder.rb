@@ -1,4 +1,4 @@
-class Katamari::Handler::BodyDecoder < Katamari::Handler::Upstream
+class Katamari::Handler::BodyDecoder < org.jboss.netty.channel.SimpleChannelUpstreamHandler
   import org.jboss.netty.handler.codec.http.multipart.HttpPostRequestDecoder
 
   def messageReceived(ctx, e)

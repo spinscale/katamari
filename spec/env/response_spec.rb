@@ -1,39 +1,48 @@
 require 'spec_helper'
 
-describe Katamari::Env::Response do
+describe Java::IoKatamariEnv::Response do
   before do
-    @event = mock('event')
-    @event.stub(:channel)
-    @event.stub(:message)
-
-    @response = Katamari::Env::Response.new(@event)
+    _request = org.jboss.netty.handler.codec.http.DefaultHttpRequest.new(org.jboss.netty.handler.codec.http.HttpVersion::HTTP_1_1, org.jboss.netty.handler.codec.http.HttpMethod::GET, '/favicon.ico')
+    _request.content = org.jboss.netty.buffer.ChannelBuffers.copied_buffer('{}', org.jboss.netty.util.CharsetUtil::UTF_8)
+    @channel = mock(:channel)
+    @event = mock(:event, :channel => @channel, :message => _request)
+    
+    Java::IoKatamariEnv::Response.__persistent__ = true
+    @response = Java::IoKatamariEnv::Response.new(@event)
   end
 
-  it 'should #initialize with default values' do
-    expect(@response.status).to eq(200)
-    expect(@response.headers).to eq('Content-Length' => 0)
-    expect(@response.body).to be_empty
+  describe '#initialize' do
+    it 'should set HTTP version 1.1 and status code 200 to the response' do
+      expect(@response.status).to eq(org.jboss.netty.handler.codec.http.HttpResponseStatus::OK)
+      expect(@response.protocol_version).to eq(org.jboss.netty.handler.codec.http.HttpVersion::HTTP_1_1)
+    end
+
+    # it 'should set instance variable @request' do
+      
+    # end
+
+    # it 'should set instance variable @channel' do
+
+    # end
   end
 
-  it 'should have accessors for status, headers, body' do
-    expect(@response.status).to eq(200)
-    @response.status = 302
-    expect(@response.status).to eq(302)
+  describe '#end' do
+    it 'should set content' do
+      @channel.stub(:write)
+      @response.end('Foo')
+      expect(@response.content.to_string(org.jboss.netty.util.CharsetUtil::UTF_8)).to eq('Foo')
+    end
 
-    expect(@response.headers).to eq('Content-Length' => 0)
-    @response.headers['Content-Type'] = 'text/html'
-    expect(@response.headers).to eq('Content-Length' => 0, 'Content-Type' => 'text/html')
+    it 'should set Content-Length header' do
+      @channel.stub(:write)
+      @response.end('Foo')
+      expect(@response.get_header('Content-Length')).to eq('3')
+    end
 
-    expect(@response.body).to be_empty
-    @response.body = 'foobar'
-    expect(@response.body).to eq('foobar')
+    it 'should write the response into the channel' do
+      @future = mock(:future)
+      @channel.should_receive(:write).with(@response).and_return(@future)
+      @response.end('Foo')
+    end
   end
-
-  # it 'should write the content into a Netty HttpResponse' do
-  #   channel = mock('channel')
-  #   @ctx.stub(:channel).and_return(channel)
-  #   channel.should_receive(:write).and_return(env)
-  #   @response.write('Hello World!')
-  #   expect(@response.body).to eq('Hello World!')
-  # end
 end
