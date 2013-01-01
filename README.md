@@ -21,7 +21,7 @@ And in another terminal:
 
 Java branch:
 
-* Fluent interface for #add and #listen
++ Fluent interface for #add and #listen
 * Refactoring of BodyDecoder and URIDecoder (and translate to Java?)
 * Extract the Ruby code to katamari-ruby
 * Create a katamari-clj

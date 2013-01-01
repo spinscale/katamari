@@ -9,7 +9,8 @@ import org.jboss.netty.channel.MessageEvent;
 
 public class Request {
   private final HttpRequest request;
-  private final Map<String, Object> params = new HashMap<String, Object>();
+  private final Map<String,String> params = new HashMap<String,String>();
+  private String path;
 
   public Request(MessageEvent e) {
     this.request = (HttpRequest)e.getMessage();
@@ -23,7 +24,15 @@ public class Request {
     return request.getUri();
   }
 
-  public Map<String, Object> params() {
+  public String path() {
+    return path;
+  }
+
+  public void path(String path) {
+    this.path = path;
+  }
+
+  public Map<String,String> params() {
     return params;
   }
 
@@ -31,7 +40,7 @@ public class Request {
     return params.get(key);
   }
 
-  public void params(String key, Object value) {
+  public void params(String key, String value) {
     params.put(key, value);
   }
 }
