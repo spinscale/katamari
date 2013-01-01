@@ -3,6 +3,10 @@ package io.katamari;
 import static org.jboss.netty.channel.Channels.*;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Iterator;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
@@ -21,6 +25,7 @@ import io.katamari.handler.HelloWorld;
 
 public class Server {
   private final ServerBootstrap bootstrap;
+  private final Map<String,ChannelHandler> handlers = new HashMap<String,ChannelHandler>();
 
   public Server() {
     this.bootstrap = new ServerBootstrap(
@@ -30,7 +35,14 @@ public class Server {
 
     bootstrap.setOption("child.tcpNoDelay", true);
     bootstrap.setOption("child.keepAlive", true);
+  }
 
+  public Server add(String name, ChannelHandler handler) {
+    handlers.put(name, handler);
+    return this;
+  }
+
+  public Server listen(int port) {
     bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
       public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = pipeline();
@@ -42,22 +54,22 @@ public class Server {
         pipeline.addLast("katamari:no_pipelining", new NoPipelining());
         pipeline.addLast("katamari:decoder", new RequestDecoder());
 
+        Iterator it = handlers.entrySet().iterator();
+        while (it.hasNext()) {
+          Map.Entry entry = (Map.Entry)it.next();
+          pipeline.addLast((String)entry.getKey(), (ChannelHandler)entry.getValue());
+        }
+
         return pipeline;
       }
     });
-  }
 
-  public void add(String name, ChannelHandler handler) {
-    Channels.pipeline().addLast(name, handler);
-  }
-
-  public void listen(int port) {
     bootstrap.bind(new InetSocketAddress(port));
+    return this;
   }
 
   public static void main(String [] args) {
     Server server = new Server();
-    server.add("hello_world", new HelloWorld());
-    server.listen(8080);
+    server.add("hello_world", new HelloWorld()).listen(8080);
   }
 }

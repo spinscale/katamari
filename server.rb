@@ -8,6 +8,4 @@ class HelloWorld < org.jboss.netty.channel.SimpleChannelUpstreamHandler
 end
 
 s = Katamari::Server.new
-s.add('uri_decoder', Katamari::Handler::URIDecoder.new)
-s.add('hello_world', HelloWorld.new)
-s.listen(8082)
+s.add('hello_world', HelloWorld.new).listen(8082)

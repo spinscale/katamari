@@ -8,4 +8,4 @@ class HelloWorldHandler < Katamari::Handler::Upstream
   end
 end
 
-Katamari.use(HelloWorldHandler).listen(8080)
+Katamari::Server.new.add('hello_world', HelloWorldHandler.new).listen(8080)
