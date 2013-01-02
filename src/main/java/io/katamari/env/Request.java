@@ -43,4 +43,8 @@ public class Request {
   public void params(String key, String value) {
     params.put(key, value);
   }
+
+  public HttpRequest request() {
+    return request;
+  }
 }

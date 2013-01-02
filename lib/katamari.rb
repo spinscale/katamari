@@ -5,6 +5,7 @@ require File.expand_path('../../target/katamari-0.1.1-SNAPSHOT.jar', __FILE__)
 
 module Katamari
   module Handler
+    java_import 'io.katamari.handler.BodyDecoder'
     java_import 'io.katamari.handler.UriDecoder'
   end
 
