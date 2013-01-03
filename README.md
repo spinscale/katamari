@@ -20,14 +20,6 @@ And in another terminal:
 
 # Roadmap
 
-Java branch:
-
-+ Fluent interface for #add and #listen
-+ Refactoring of BodyDecoder and URIDecoder
-* Add tests (+ use Travis CI) 
-* Update to Netty 4
-* Use GitHub issues
-
 New API branch:
 
 * Rename Server to HttpServer with a DefaultHttpPipelineFactory with the following middlewares: HttpRequestDecoder, HttpChunkAggregator(?), HttpResponseEncoder, NoPipelining, RequestDecoder
@@ -40,5 +32,7 @@ Agnostic branch:
 
 General:
 
+* Update to Netty 4
 * Add more middlewares
 * Add a router
+* Use GitHub issues
