@@ -1,9 +1,7 @@
 package io.katamari.handler;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Iterator;
 import java.util.List;
 
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
@@ -21,14 +19,9 @@ public class UriDecoder extends SimpleChannelUpstreamHandler {
 
     QueryStringDecoder decoder = new QueryStringDecoder(env.request().uri());
     env.request().path(decoder.getPath());
-    Map<String,List<String>> parameters = decoder.getParameters();
-    Iterator it = parameters.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry entry = (Map.Entry)it.next();
-      List<String> values = (List)entry.getValue();
-      if (!values.isEmpty()) {
-        env.request().params((String)entry.getKey(), (String)values.get(0));
-      }
+
+    for (Map.Entry<String, List<String>> entry: decoder.getParameters().entrySet()) {
+      env.request().params((String)entry.getKey(), (String)entry.getValue().get(0));
     }
 
     ctx.sendUpstream(e);

@@ -24,9 +24,12 @@ Java branch:
 
 + Fluent interface for #add and #listen
 + Refactoring of BodyDecoder and URIDecoder
-* Add tests (+ use Travis CI)
-* Remove HttpChunkAggregator and enable Chunked Transfer Encoding
+* Add tests (+ use Travis CI) 
 * Update to Netty 4
+
+New API branch:
+
+* Rename Server to HttpServer with a DefaultHttpPipelineFactory with the following middlewares: HttpRequestDecoder, HttpChunkAggregator(?), HttpResponseEncoder, NoPipelining, RequestDecoder
 * Better API
 
 Agnostic branch:
