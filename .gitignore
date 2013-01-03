@@ -4,3 +4,6 @@ vendor
 .rbenv-version
 javalib/*.jar
 target
+.project
+.classpath
+.settings

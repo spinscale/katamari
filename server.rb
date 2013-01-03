@@ -3,7 +3,6 @@ require File.expand_path('../lib/katamari', __FILE__)
 class HelloWorld < org.jboss.netty.channel.SimpleChannelUpstreamHandler
   def messageReceived(ctx, e)
     env = e.message
-    puts env.request.params
     env.response.end('Hello World!')
   end
 end

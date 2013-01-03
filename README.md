@@ -22,20 +22,17 @@ And in another terminal:
 Java branch:
 
 + Fluent interface for #add and #listen
-* Refactoring of BodyDecoder and URIDecoder (and translate to Java?)
++ Refactoring of BodyDecoder and URIDecoder
+* Add tests (+ use Travis CI)
+* Remove HttpChunkAggregator and enable Chunked Transfer Encoding
+* Update to Netty 4
+* Better API
+
+Agnostic branch:
+
 * Extract the Ruby code to katamari-ruby
 * Create a katamari-clj
-* Add tests
-
-Netty4 branch:
-
-* Switch to Netty 4 when the beta is out
 
 General:
 
-* Update & cleanup tests (+ use Travis CI)
-* Remove HttpChunkAggregator and enable Chunked Transfer Encoding
-* Update to Netty 3.6.0
 * Add more middlewares
-* Better API
-* A lot of other things

@@ -1,5 +1,0 @@
-source :rubygems
-
-gem 'sequel'
-gem 'jdbc-h2'
-gem 'json'
