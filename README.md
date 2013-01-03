@@ -17,22 +17,3 @@ Run the examples:
 And in another terminal:
 
     curl http://localhost:8082/
-
-# Roadmap
-
-New API branch:
-
-* Rename Server to HttpServer with a DefaultHttpPipelineFactory with the following middlewares: HttpRequestDecoder, HttpChunkAggregator(?), HttpResponseEncoder, NoPipelining, RequestDecoder
-* Better API
-
-Agnostic branch:
-
-* Extract the Ruby code to katamari-ruby
-* Create a katamari-clj
-
-General:
-
-* Update to Netty 4
-* Add more middlewares
-* Add a router
-* Use GitHub issues
