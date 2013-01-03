@@ -1,21 +1,22 @@
-# Katamari (塊) Asynchronous Middleware Framework
+# Katamari (塊) Polyglot Asynchronous Middleware Framework
 
-Rack unified web development in Ruby. It has helped us well but its simplistic API is limiting features such as streaming. [Rails 4.0 has worked around these limits but it's not perfect](http://blog.plataformatec.com.br/2012/06/why-your-web-framework-should-not-adopt-rack-api). Katamari aims to create a new middleware framework with asynchrony in its core, using [Netty](http://netty.io) to achieve great scalability.
+Katamari is a Middleware Framework inspired by Rack (Ruby), Connect.js (Node.js), WSGI (Python) and Ring (Clojure). The asynchronous part is handled by [Netty](http://netty.io). And it is polyglot: written in Java with bindings for other languages (currently only Ruby).
 
-WSGI in Python and Ring in Clojure share more or less the same specification than Rack. Since Katamari is based on the JVM, it could be used in Jython or Clojure, but there still need some work.
+It is a work in progress and many things will change. There will be more middlewares, enough to easily create a JSON API with authentication and the basic features needed for it. Middlewares will be optionally be bound to routes. There will be bindings in Javascript, Clojure, Python, Scala and more.
 
-# Run (JRuby 1.7.x required)
+# Run (Ruby bindings, JRuby 1.7.x required)
 
 Run the examples:
 
     git clone git://github.com/nmerouze/katamari.git
     cd katamari
-    curl http://cloud.github.com/downloads/nmerouze/katamari/netty-3.5.11.Final.jar > java_lib/netty-3.5.11.Final.jar
-    ruby examples/hello_world.rb
+    curl http://cloud.github.com/downloads/nmerouze/katamari/netty-3.5.11.Final.jar > javalib/netty-3.5.11.Final.jar
+    mvn package
+    ruby server.rb
 
 And in another terminal:
 
-    curl http://localhost:8080/
+    curl http://localhost:8082/
 
 # Roadmap
 
@@ -36,3 +37,4 @@ Agnostic branch:
 General:
 
 * Add more middlewares
+* Add a router
