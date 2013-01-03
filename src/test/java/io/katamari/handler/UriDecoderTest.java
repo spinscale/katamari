@@ -33,7 +33,6 @@ public class UriDecoderTest {
 
   @Before
   public void initialize() {
-    //request.setContent(ChannelBuffers.copiedBuffer("{}", CharsetUtil.UTF_8));
     when(event.getMessage()).thenReturn(request);
     this.env = new Env(event); // TODO: mock
     when(alteredEvent.getMessage()).thenReturn(env);
@@ -41,9 +40,9 @@ public class UriDecoderTest {
 
   @Test
   public void exposesPathInRequest() throws Exception {
-    assertEquals(((Env)alteredEvent.getMessage()).request().path(), null);
+    assertEquals(null, ((Env)alteredEvent.getMessage()).request().path());
     handler.messageReceived(context, alteredEvent);
-    assertEquals(((Env)alteredEvent.getMessage()).request().path(), "/path");
+    assertEquals("/path", ((Env)alteredEvent.getMessage()).request().path());
   }
 
   @Test
@@ -51,8 +50,8 @@ public class UriDecoderTest {
     HashMap<String,String> params = new HashMap<String,String>();
     params.put("id", "1");
 
-    assertEquals(((Env)alteredEvent.getMessage()).request().params(), new HashMap<String,String>());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).request().params());
     handler.messageReceived(context, alteredEvent);
-    assertEquals(((Env)alteredEvent.getMessage()).request().params(), params);
+    assertEquals(params, ((Env)alteredEvent.getMessage()).request().params());
   }
 }

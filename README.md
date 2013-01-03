@@ -26,6 +26,7 @@ Java branch:
 + Refactoring of BodyDecoder and URIDecoder
 * Add tests (+ use Travis CI) 
 * Update to Netty 4
+* Use GitHub issues
 
 New API branch:
 

@@ -26,10 +26,8 @@ public class BodyDecoder extends SimpleChannelUpstreamHandler {
 
     if (env.request().method() == POST || env.request().method() == PUT || env.request().method() == PATCH) {
       HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(env.request().request());
-      List<InterfaceHttpData> parameters = decoder.getBodyHttpDatas();
-      Iterator it = parameters.iterator();
-      while (it.hasNext()) {
-        InterfaceHttpData entry = (InterfaceHttpData)it.next();
+
+      for (InterfaceHttpData entry: decoder.getBodyHttpDatas()) {
         if (entry.getHttpDataType() == HttpDataType.Attribute) {
           Attribute attribute = (Attribute)entry;
           env.request().params((String)attribute.getName(), (String)attribute.getValue());
