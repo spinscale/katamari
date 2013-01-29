@@ -4,14 +4,14 @@
   <groupId>io.katamari</groupId>
   <artifactId>katamari</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.1.2-SNAPSHOT</version>
   <name>katamari</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty</artifactId>
-      <version>3.5.11.Final</version>
+      <version>3.6.2.Final</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
