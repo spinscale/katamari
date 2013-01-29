@@ -4,16 +4,11 @@ Katamari is a Middleware Framework inspired by Rack (Ruby), Connect.js (Node.js)
 
 It is a work in progress and many things will change. There will be more middlewares, enough to easily create a JSON API with authentication and the basic features needed for it. Middlewares will be optionally be bound to routes. There will be bindings in Javascript, Clojure, Python, Scala and more.
 
-# Run (Ruby bindings, JRuby 1.7.x required)
+# Bindings
 
-Run the examples:
+* Ruby: http://github.com/nmerouze/katamari-ruby
 
-    git clone git://github.com/nmerouze/katamari.git
-    cd katamari
-    curl http://cloud.github.com/downloads/nmerouze/katamari/netty-3.5.11.Final.jar > javalib/netty-3.5.11.Final.jar
+# Run
+
     mvn package
-    ruby server.rb
-
-And in another terminal:
-
-    curl http://localhost:8082/
+    mvn exec:java
