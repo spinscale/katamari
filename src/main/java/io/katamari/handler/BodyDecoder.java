@@ -24,7 +24,7 @@ public class BodyDecoder extends SimpleChannelUpstreamHandler {
       for (InterfaceHttpData entry: decoder.getBodyHttpDatas()) {
         if (entry.getHttpDataType() == HttpDataType.Attribute) {
           Attribute attribute = (Attribute)entry;
-          env.getRequest().params((String)attribute.getName(), (String)attribute.getValue());
+          env.getRequest().setParam((String)attribute.getName(), (String)attribute.getValue());
         }
       }
     }

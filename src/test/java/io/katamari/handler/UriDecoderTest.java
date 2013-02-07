@@ -19,7 +19,7 @@ import io.katamari.env.Request;
 import io.katamari.handler.UriDecoder;
 
 public class UriDecoderTest {
-  private final Request request = new Request(HTTP_1_1, GET, "/path?id=1"); // TODO: mock
+  private final Request request = new Request(HTTP_1_1, GET, "/path?id=1");
   private final MessageEvent event = mock(MessageEvent.class);
   private final ChannelHandlerContext context = mock(ChannelHandlerContext.class);
   private final MessageEvent alteredEvent = mock(MessageEvent.class);
@@ -30,15 +30,15 @@ public class UriDecoderTest {
   @Before
   public void initialize() {
     when(event.getMessage()).thenReturn(request);
-    this.env = new Env(event); // TODO: mock
+    this.env = new Env(event);
     when(alteredEvent.getMessage()).thenReturn(env);
   }
 
   @Test
   public void exposesPathInRequest() throws Exception {
-    assertEquals(null, ((Env)alteredEvent.getMessage()).getRequest().path());
+    assertEquals(null, ((Env)alteredEvent.getMessage()).getRequest().getPath());
     handler.messageReceived(context, alteredEvent);
-    assertEquals("/path", ((Env)alteredEvent.getMessage()).getRequest().path());
+    assertEquals("/path", ((Env)alteredEvent.getMessage()).getRequest().getPath());
   }
 
   @Test
@@ -46,8 +46,8 @@ public class UriDecoderTest {
     HashMap<String,String> params = new HashMap<String,String>();
     params.put("id", "1");
 
-    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().params());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().getParams());
     handler.messageReceived(context, alteredEvent);
-    assertEquals(params, ((Env)alteredEvent.getMessage()).getRequest().params());
+    assertEquals(params, ((Env)alteredEvent.getMessage()).getRequest().getParams());
   }
 }

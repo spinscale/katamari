@@ -14,7 +14,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
-import io.katamari.ServerChannelPipelineFactory;
+import io.katamari.ServerPipeline;
 import io.katamari.handler.NoPipelining;
 import io.katamari.handler.RequestDecoder;
 import io.katamari.handler.EnvInitializer;
@@ -24,10 +24,7 @@ public class Server {
   private final ServerBootstrap bootstrap;
 
   public Server(int port, final ServerPipeline sp) {
-    this.bootstrap = new ServerBootstrap(
-      new NioServerSocketChannelFactory(
-              Executors.newCachedThreadPool(),
-              Executors.newCachedThreadPool()));
+    this.bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
 
     bootstrap.setOption("child.tcpNoDelay", true);
     bootstrap.setOption("child.keepAlive", true);

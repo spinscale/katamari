@@ -21,7 +21,7 @@ import io.katamari.env.Request;
 import io.katamari.handler.BodyDecoder;
 
 public class BodyDecoderTest {
-  private final Request request = new Request(HTTP_1_1, POST, "/path?id=1"); // TODO: mock
+  private final Request request = new Request(HTTP_1_1, POST, "/path?id=1");
   private final MessageEvent event = mock(MessageEvent.class);
   private final ChannelHandlerContext context = mock(ChannelHandlerContext.class);
   private final MessageEvent alteredEvent = mock(MessageEvent.class);
@@ -33,7 +33,7 @@ public class BodyDecoderTest {
   public void initialize() {
     request.setContent(ChannelBuffers.copiedBuffer("foo=bar", CharsetUtil.UTF_8));
     when(event.getMessage()).thenReturn(request);
-    this.env = new Env(event); // TODO: mock
+    this.env = new Env(event);
     when(alteredEvent.getMessage()).thenReturn(env);
   }
 
@@ -42,16 +42,16 @@ public class BodyDecoderTest {
     HashMap<String,String> params = new HashMap<String,String>();
     params.put("foo", "bar");
 
-    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().params());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().getParams());
     handler.messageReceived(context, alteredEvent);
-    assertEquals(params, ((Env)alteredEvent.getMessage()).getRequest().params());
+    assertEquals(params, ((Env)alteredEvent.getMessage()).getRequest().getParams());
   }
 
   @Test
   public void notExposesBodyParamsInRequestonGet() throws Exception {
     request.setMethod(GET);
-    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().params());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().getParams());
     handler.messageReceived(context, alteredEvent);
-    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().params());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().getParams());
   }
 }

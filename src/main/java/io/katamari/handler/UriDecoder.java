@@ -18,10 +18,10 @@ public class UriDecoder extends SimpleChannelUpstreamHandler {
     Env env = (Env)e.getMessage();
 
     QueryStringDecoder decoder = new QueryStringDecoder(env.getRequest().getUri());
-    env.getRequest().path(decoder.getPath());
+    env.getRequest().setPath(decoder.getPath());
 
     for (Map.Entry<String, List<String>> entry: decoder.getParameters().entrySet()) {
-      env.getRequest().params((String)entry.getKey(), (String)entry.getValue().get(0));
+      env.getRequest().setParam((String)entry.getKey(), (String)entry.getValue().get(0));
     }
 
     ctx.sendUpstream(e);

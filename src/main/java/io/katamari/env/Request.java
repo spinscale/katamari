@@ -15,23 +15,23 @@ public class Request extends DefaultHttpRequest {
     super(httpVersion, method, uri);
   }
 
-  public String path() {
+  public String getPath() {
     return path;
   }
 
-  public void path(String path) {
+  public void setPath(String path) {
     this.path = path;
   }
 
-  public Map<String,String> params() {
+  public Map<String,String> getParams() {
     return params;
   }
 
-  public Object params(String key) {
+  public Object getParam(String key) {
     return params.get(key);
   }
 
-  public void params(String key, String value) {
+  public void setParam(String key, String value) {
     params.put(key, value);
   }
 }

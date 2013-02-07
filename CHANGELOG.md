@@ -1,4 +1,8 @@
-# 0.1.3
+# 0.1.4 SNAPSHOT
+
+* Refactoring of the Response class
+
+# 0.1.3 (13/02/07)
 
 * Refactoring of the Server API to initialize handlers inside the pipeline factory
 * Refactoring of Request and Env
