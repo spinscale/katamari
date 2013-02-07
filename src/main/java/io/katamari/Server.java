@@ -3,9 +3,6 @@ package io.katamari;
 import static org.jboss.netty.channel.Channels.*;
 
 import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
@@ -17,6 +14,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
+import io.katamari.ServerChannelPipelineFactory;
 import io.katamari.handler.NoPipelining;
 import io.katamari.handler.RequestDecoder;
 import io.katamari.handler.EnvInitializer;
@@ -24,9 +22,8 @@ import io.katamari.handler.HelloWorld;
 
 public class Server {
   private final ServerBootstrap bootstrap;
-  private final Map<String,ChannelHandler> handlers = new HashMap<String,ChannelHandler>();
 
-  public Server() {
+  public Server(int port, final ServerChannelPipelineFactory factory) {
     this.bootstrap = new ServerBootstrap(
       new NioServerSocketChannelFactory(
               Executors.newCachedThreadPool(),
@@ -34,14 +31,7 @@ public class Server {
 
     bootstrap.setOption("child.tcpNoDelay", true);
     bootstrap.setOption("child.keepAlive", true);
-  }
 
-  public Server add(String name, ChannelHandler handler) {
-    handlers.put(name, handler);
-    return this;
-  }
-
-  public Server listen(int port) {
     bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
       public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = pipeline();
@@ -53,20 +43,20 @@ public class Server {
         pipeline.addLast("katamari:no_pipelining", new NoPipelining());
         pipeline.addLast("katamari:env_initializer", new EnvInitializer());
         
-        for (Map.Entry<String,ChannelHandler> entry: handlers.entrySet()) {
-          pipeline.addLast((String)entry.getKey(), (ChannelHandler)entry.getValue());
-        }
+        factory.getPipeline(pipeline);
 
         return pipeline;
       }
     });
 
     bootstrap.bind(new InetSocketAddress(port));
-    return this;
   }
 
   public static void main(String [] args) {
-    Server server = new Server();
-    server.add("hello_world", new HelloWorld()).listen(8080);
+    new Server(8080, new ServerChannelPipelineFactory() {
+      public void getPipeline(ChannelPipeline pipeline) {
+        pipeline.addLast("hello_world", new HelloWorld());
+      }
+    });
   }
 }
