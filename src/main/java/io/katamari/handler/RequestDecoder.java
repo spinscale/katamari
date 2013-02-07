@@ -1,22 +1,17 @@
 package io.katamari.handler;
 
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.LifeCycleAwareChannelHandler;
+import org.jboss.netty.handler.codec.http.HttpMessage;
+import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 
-import io.katamari.Env;
+import io.katamari.env.Request;
 
-public class RequestDecoder extends SimpleChannelUpstreamHandler {
+public class RequestDecoder extends HttpRequestDecoder {
   @Override
-  public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-    Channels.fireMessageReceived(ctx, new Env(e));
-  }
-
-  @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-    e.getCause().printStackTrace();
-    e.getChannel().close();
+  protected HttpMessage createMessage(String[] initialLine) throws Exception {
+    return new Request(
+      HttpVersion.valueOf(initialLine[2]), HttpMethod.valueOf(initialLine[0]), initialLine[1]);
   }
 }

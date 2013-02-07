@@ -17,7 +17,7 @@ public class UriDecoder extends SimpleChannelUpstreamHandler {
   public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
     Env env = (Env)e.getMessage();
 
-    QueryStringDecoder decoder = new QueryStringDecoder(env.request().uri());
+    QueryStringDecoder decoder = new QueryStringDecoder(env.request().getUri());
     env.request().path(decoder.getPath());
 
     for (Map.Entry<String, List<String>> entry: decoder.getParameters().entrySet()) {

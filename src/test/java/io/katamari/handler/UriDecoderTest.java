@@ -11,19 +11,15 @@ import static org.mockito.Mockito.*;
 import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 import static org.jboss.netty.handler.codec.http.HttpMethod.*;
 
-import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.util.CharsetUtil;
 
 import io.katamari.Env;
+import io.katamari.env.Request;
 import io.katamari.handler.UriDecoder;
 
 public class UriDecoderTest {
-  private final HttpRequest request = new DefaultHttpRequest(HTTP_1_1, GET, "/path?id=1"); // TODO: mock
+  private final Request request = new Request(HTTP_1_1, GET, "/path?id=1"); // TODO: mock
   private final MessageEvent event = mock(MessageEvent.class);
   private final ChannelHandlerContext context = mock(ChannelHandlerContext.class);
   private final MessageEvent alteredEvent = mock(MessageEvent.class);

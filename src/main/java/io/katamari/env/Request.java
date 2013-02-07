@@ -3,25 +3,16 @@ package io.katamari.env;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 
-public class Request {
-  private final HttpRequest request;
+public class Request extends DefaultHttpRequest {
   private final Map<String,String> params = new HashMap<String,String>();
   private String path;
 
-  public Request(MessageEvent e) {
-    this.request = (HttpRequest)e.getMessage();
-  }
-
-  public HttpMethod method() {
-    return request.getMethod();
-  }
-
-  public String uri() {
-    return request.getUri();
+  public Request(HttpVersion httpVersion, HttpMethod method, String uri) {
+    super(httpVersion, method, uri);
   }
 
   public String path() {
@@ -42,9 +33,5 @@ public class Request {
 
   public void params(String key, String value) {
     params.put(key, value);
-  }
-
-  public HttpRequest request() {
-    return request;
   }
 }

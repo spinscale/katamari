@@ -10,7 +10,7 @@ public class Env {
   private final Response response;
 
   public Env(MessageEvent e) {
-    this.request = new Request(e);
+    this.request = (Request) e.getMessage();
     this.response = new Response(e);
   }
 

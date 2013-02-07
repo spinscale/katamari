@@ -6,7 +6,6 @@ import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
 import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -14,14 +13,16 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.util.CharsetUtil;
 import org.jboss.netty.channel.MessageEvent;
 
+import io.katamari.env.Request;
+
 public class Response extends DefaultHttpResponse {
-  private HttpRequest request;
+  private Request request;
   private Channel channel;
 
   public Response(MessageEvent e) {
     super(HTTP_1_1, OK);
-    this.request = (HttpRequest)e.getMessage();
-    this.channel = (Channel)e.getChannel();
+    this.request = (Request) e.getMessage();
+    this.channel = (Channel) e.getChannel();
   }
 
   public void end(String content) {

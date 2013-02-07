@@ -3,10 +3,9 @@ package io.katamari;
 import static org.jboss.netty.channel.Channels.*;
 
 import java.net.InetSocketAddress;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Iterator;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
@@ -16,11 +15,11 @@ import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
 import io.katamari.handler.NoPipelining;
 import io.katamari.handler.RequestDecoder;
+import io.katamari.handler.EnvInitializer;
 import io.katamari.handler.HelloWorld;
 
 public class Server {
@@ -47,16 +46,14 @@ public class Server {
       public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = pipeline();
 
-        pipeline.addLast("netty:decoder", new HttpRequestDecoder());
+        pipeline.addLast("katamari:decoder", new RequestDecoder());
         pipeline.addLast("netty:aggregator", new HttpChunkAggregator(65536));
         pipeline.addLast("netty:encoder", new HttpResponseEncoder());
 
         pipeline.addLast("katamari:no_pipelining", new NoPipelining());
-        pipeline.addLast("katamari:decoder", new RequestDecoder());
-
-        Iterator it = handlers.entrySet().iterator();
-        while (it.hasNext()) {
-          Map.Entry entry = (Map.Entry)it.next();
+        pipeline.addLast("katamari:env_initializer", new EnvInitializer());
+        
+        for (Map.Entry<String,ChannelHandler> entry: handlers.entrySet()) {
           pipeline.addLast((String)entry.getKey(), (ChannelHandler)entry.getValue());
         }
 

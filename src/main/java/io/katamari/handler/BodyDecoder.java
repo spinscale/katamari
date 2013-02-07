@@ -1,11 +1,5 @@
 package io.katamari.handler;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Iterator;
-import java.util.List;
-
 import static org.jboss.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 import static org.jboss.netty.handler.codec.http.HttpMethod.*;
 
@@ -24,8 +18,8 @@ public class BodyDecoder extends SimpleChannelUpstreamHandler {
   public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
     Env env = (Env)e.getMessage();
 
-    if (env.request().method() == POST || env.request().method() == PUT || env.request().method() == PATCH) {
-      HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(env.request().request());
+    if (env.request().getMethod() == POST || env.request().getMethod() == PUT || env.request().getMethod() == PATCH) {
+      HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(env.request());
 
       for (InterfaceHttpData entry: decoder.getBodyHttpDatas()) {
         if (entry.getHttpDataType() == HttpDataType.Attribute) {
