@@ -36,9 +36,9 @@ public class UriDecoderTest {
 
   @Test
   public void exposesPathInRequest() throws Exception {
-    assertEquals(null, ((Env)alteredEvent.getMessage()).request().path());
+    assertEquals(null, ((Env)alteredEvent.getMessage()).getRequest().path());
     handler.messageReceived(context, alteredEvent);
-    assertEquals("/path", ((Env)alteredEvent.getMessage()).request().path());
+    assertEquals("/path", ((Env)alteredEvent.getMessage()).getRequest().path());
   }
 
   @Test
@@ -46,8 +46,8 @@ public class UriDecoderTest {
     HashMap<String,String> params = new HashMap<String,String>();
     params.put("id", "1");
 
-    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).request().params());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().params());
     handler.messageReceived(context, alteredEvent);
-    assertEquals(params, ((Env)alteredEvent.getMessage()).request().params());
+    assertEquals(params, ((Env)alteredEvent.getMessage()).getRequest().params());
   }
 }

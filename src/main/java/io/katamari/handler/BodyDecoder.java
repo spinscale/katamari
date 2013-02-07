@@ -18,13 +18,13 @@ public class BodyDecoder extends SimpleChannelUpstreamHandler {
   public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
     Env env = (Env)e.getMessage();
 
-    if (env.request().getMethod() == POST || env.request().getMethod() == PUT || env.request().getMethod() == PATCH) {
-      HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(env.request());
+    if (env.getRequest().getMethod() == POST || env.getRequest().getMethod() == PUT || env.getRequest().getMethod() == PATCH) {
+      HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(env.getRequest());
 
       for (InterfaceHttpData entry: decoder.getBodyHttpDatas()) {
         if (entry.getHttpDataType() == HttpDataType.Attribute) {
           Attribute attribute = (Attribute)entry;
-          env.request().params((String)attribute.getName(), (String)attribute.getValue());
+          env.getRequest().params((String)attribute.getName(), (String)attribute.getValue());
         }
       }
     }

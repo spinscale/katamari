@@ -42,16 +42,16 @@ public class BodyDecoderTest {
     HashMap<String,String> params = new HashMap<String,String>();
     params.put("foo", "bar");
 
-    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).request().params());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().params());
     handler.messageReceived(context, alteredEvent);
-    assertEquals(params, ((Env)alteredEvent.getMessage()).request().params());
+    assertEquals(params, ((Env)alteredEvent.getMessage()).getRequest().params());
   }
 
   @Test
   public void notExposesBodyParamsInRequestonGet() throws Exception {
     request.setMethod(GET);
-    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).request().params());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().params());
     handler.messageReceived(context, alteredEvent);
-    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).request().params());
+    assertEquals(new HashMap<String,String>(), ((Env)alteredEvent.getMessage()).getRequest().params());
   }
 }

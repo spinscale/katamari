@@ -9,7 +9,7 @@ import io.katamari.Env;
 public class HelloWorld extends SimpleChannelUpstreamHandler {
   @Override
   public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-    Env env = (Env)e.getMessage();
-    env.response().end("Hello World");
+    Env env = (Env) e.getMessage();
+    env.getResponse().end("Hello World");
   }
 }

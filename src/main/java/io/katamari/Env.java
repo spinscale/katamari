@@ -14,11 +14,11 @@ public class Env {
     this.response = new Response(e);
   }
 
-  public Request request() {
+  public Request getRequest() {
     return request;
   }
 
-  public Response response() {
+  public Response getResponse() {
     return response;
   }
 }
