@@ -23,7 +23,7 @@ import io.katamari.handler.HelloWorld;
 public class Server {
   private final ServerBootstrap bootstrap;
 
-  public Server(int port, final ServerChannelPipelineFactory factory) {
+  public Server(int port, final ServerPipeline sp) {
     this.bootstrap = new ServerBootstrap(
       new NioServerSocketChannelFactory(
               Executors.newCachedThreadPool(),
@@ -43,7 +43,7 @@ public class Server {
         pipeline.addLast("katamari:no_pipelining", new NoPipelining());
         pipeline.addLast("katamari:env_initializer", new EnvInitializer());
         
-        factory.getPipeline(pipeline);
+        sp.populate(pipeline);
 
         return pipeline;
       }
@@ -53,8 +53,8 @@ public class Server {
   }
 
   public static void main(String [] args) {
-    new Server(8080, new ServerChannelPipelineFactory() {
-      public void getPipeline(ChannelPipeline pipeline) {
+    new Server(8080, new ServerPipeline() {
+      public void populate(ChannelPipeline pipeline) {
         pipeline.addLast("hello_world", new HelloWorld());
       }
     });
