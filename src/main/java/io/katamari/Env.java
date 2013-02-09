@@ -11,7 +11,7 @@ public class Env {
 
   public Env(MessageEvent e) {
     this.request = (Request) e.getMessage();
-    this.response = new Response(e);
+    this.response = new Response(e.getChannel());
   }
 
   public Request getRequest() {
