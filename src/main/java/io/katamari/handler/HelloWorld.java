@@ -10,7 +10,6 @@ public class HelloWorld extends SimpleChannelUpstreamHandler {
   @Override
   public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
     Env env = (Env) e.getMessage();
-    env.getResponse().writeHead(200);
     env.getResponse().end("Hello World");
   }
 }

@@ -24,7 +24,7 @@ public class ResponseTest {
 
   private Response response;
 
-  @Beforev
+  @Before
   public void initialize() {
     MockitoAnnotations.initMocks(this);
     when(channel.write(anyObject())).thenReturn(null);

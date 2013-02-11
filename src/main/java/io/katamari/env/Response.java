@@ -4,11 +4,16 @@ import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
 
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.util.CharsetUtil;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -17,11 +22,14 @@ import org.jboss.netty.channel.Channel;
 public class Response {
   private Channel channel;
   private DefaultHttpResponse headResponse;
+  private Map<String,String> trailers = new HashMap<String,String>();
   private boolean headersSent = false;
+  public  boolean sendDate = true;
 
   public Response(Channel channel) {
     this.channel = channel;
     this.headResponse = new DefaultHttpResponse(HTTP_1_1, OK);
+    if (sendDate) { headResponse.setHeader("Date", getUtcDateTime()); }
     headResponse.setHeader("Connection", "keep-alive");
     headResponse.setHeader("Transfer-Encoding", "chunked");
   }
@@ -55,6 +63,7 @@ public class Response {
 
   public void writeHead(int statusCode) throws HeadersAlreadySentException {
     setStatusCode(statusCode);
+    if (!sendDate) { removeHeader("Date"); }
     channel.write(headResponse);
     headersSent = true;
   }
@@ -87,7 +96,25 @@ public class Response {
   public void end(String data, Charset encoding) throws HeadersAlreadySentException {
     if (!headersSent) { writeHead(getStatusCode()); }
     if (data != null) { write(data, encoding); }
-    channel.write(new DefaultHttpChunkTrailer());
+
+    HttpChunkTrailer chunkTrailer = new DefaultHttpChunkTrailer();
+    for (Map.Entry<String,String> trailer: trailers.entrySet()) {
+      chunkTrailer.addHeader((String)trailer.getKey(), (String)trailer.getValue());
+    }
+    
+    channel.write(chunkTrailer);
+  }
+
+  public void addTrailers(Map<String,String> headers) {
+    for (Map.Entry<String,String> header: headers.entrySet()) {
+      trailers.put((String)header.getKey(), (String)header.getValue());
+    }
+  }
+
+  private String getUtcDateTime() {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return dateFormat.format(new Date());
   }
 
   public static class HeadersAlreadySentException extends Exception {
