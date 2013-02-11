@@ -1,6 +1,10 @@
 package io.katamari.env;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.runner.RunWith;
 import org.junit.Before;
@@ -20,7 +24,7 @@ public class ResponseTest {
 
   private Response response;
 
-  @Before
+  @Beforev
   public void initialize() {
     MockitoAnnotations.initMocks(this);
     when(channel.write(anyObject())).thenReturn(null);
@@ -43,5 +47,13 @@ public class ResponseTest {
   public void cantRemoveHeaderAfterHeadersHasBeenSent() throws HeadersAlreadySentException {
     response.writeHead(200);
     response.removeHeader("Foo");
+  }
+
+  @Test
+  public void setHeadersWhileWritingHead() throws HeadersAlreadySentException {
+    Map<String, String> headers = new HashMap<String, String>();
+    headers.put("Foo", "bar");
+    response.writeHead(200, headers);
+    assertEquals("bar", response.getHeader("Foo"));
   }
 }

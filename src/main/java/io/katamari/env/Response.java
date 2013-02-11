@@ -3,6 +3,9 @@ package io.katamari.env;
 import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
 
+import java.nio.charset.Charset;
+import java.util.Map;
+
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
@@ -56,25 +59,41 @@ public class Response {
     headersSent = true;
   }
 
+  public void writeHead(int statusCode, Map<String,String> headers) throws HeadersAlreadySentException {
+    for (Map.Entry<String,String> header: headers.entrySet()) {
+      setHeader((String)header.getKey(), (String)header.getValue());
+    }
+
+    writeHead(statusCode);
+  }
+
   public void write(String data) throws HeadersAlreadySentException {
+    write(data, CharsetUtil.UTF_8);
+  }
+
+  public void write(String data, Charset encoding) throws HeadersAlreadySentException {
     if (!headersSent) { writeHead(getStatusCode()); }
-    channel.write(new DefaultHttpChunk(ChannelBuffers.copiedBuffer(data, CharsetUtil.UTF_8)));
+    channel.write(new DefaultHttpChunk(ChannelBuffers.copiedBuffer(data, encoding)));
   }
 
   public void end() throws HeadersAlreadySentException {
-    end("");
+    end(null, CharsetUtil.UTF_8);
   }
 
   public void end(String data) throws HeadersAlreadySentException {
+    end(data, CharsetUtil.UTF_8);
+  }
+
+  public void end(String data, Charset encoding) throws HeadersAlreadySentException {
     if (!headersSent) { writeHead(getStatusCode()); }
-    if (data != "") { write(data); }
+    if (data != null) { write(data, encoding); }
     channel.write(new DefaultHttpChunkTrailer());
   }
 
   public static class HeadersAlreadySentException extends Exception {
-	private static final long serialVersionUID = 3944337479091193286L;
+    private static final long serialVersionUID = 3944337479091193286L;
 
-	public HeadersAlreadySentException() {
+    public HeadersAlreadySentException() {
     }
 
     public HeadersAlreadySentException(String msg) {
