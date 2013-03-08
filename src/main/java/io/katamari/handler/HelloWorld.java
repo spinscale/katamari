@@ -1,15 +1,18 @@
 package io.katamari.handler;
 
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
+import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.channel.ChannelHandlerContext;
 
 import io.katamari.Env;
 
-public class HelloWorld extends SimpleChannelUpstreamHandler {
+public class HelloWorld extends ChannelInboundMessageHandlerAdapter<Env> {
   @Override
-  public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-    Env env = (Env) e.getMessage();
+  public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     env.getResponse().end("Hello World");
+  }
+
+  @Override
+  public void endMessageReceived(ChannelHandlerContext ctx) throws Exception {
+    ctx.flush();
   }
 }

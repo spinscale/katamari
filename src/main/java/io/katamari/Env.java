@@ -1,20 +1,20 @@
 package io.katamari;
 
-import org.jboss.netty.channel.MessageEvent;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
 
-import io.katamari.env.Request;
 import io.katamari.env.Response;
 
 public class Env {
-  private final Request request;
+  private final DefaultFullHttpRequest request;
   private final Response response;
 
-  public Env(MessageEvent e) {
-    this.request = (Request) e.getMessage();
-    this.response = new Response(e.getChannel());
+  public Env(ChannelHandlerContext ctx, DefaultFullHttpRequest msg) {
+    this.request = msg;
+    this.response = new Response(ctx);
   }
 
-  public Request getRequest() {
+  public DefaultFullHttpRequest getRequest() {
     return request;
   }
 

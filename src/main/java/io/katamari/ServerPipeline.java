@@ -1,6 +1,6 @@
 package io.katamari;
 
-import org.jboss.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPipeline;
 
 public interface ServerPipeline {
   void populate(ChannelPipeline pipeline);

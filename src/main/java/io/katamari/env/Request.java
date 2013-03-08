@@ -3,9 +3,9 @@ package io.katamari.env;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpVersion;
 
 public class Request extends DefaultHttpRequest {
   private final Map<String,String> params = new HashMap<String,String>();

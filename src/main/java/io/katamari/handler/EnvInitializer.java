@@ -1,25 +1,25 @@
 package io.katamari.handler;
 
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.ExceptionEvent;
+import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.handler.codec.http.HttpRequest;
 
 import io.katamari.Env;
-import io.katamari.env.Request;
 
-public class EnvInitializer extends SimpleChannelUpstreamHandler {
+public class EnvInitializer extends ChannelInboundMessageHandlerAdapter<Object> {
   @Override
-  public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-    if (e.getMessage() instanceof Request) {
-      Channels.fireMessageReceived(ctx, new Env(e));
+  public void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
+    if (msg instanceof HttpRequest) {
+      if (ctx.nextInboundMessageBuffer().unfoldAndAdd(new Env(ctx, (DefaultFullHttpRequest) msg))) {
+        ctx.fireInboundBufferUpdated();
+      }
     }
   }
 
   @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-    e.getCause().printStackTrace();
-    e.getChannel().close();
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    cause.printStackTrace();
+    ctx.close();
   }
 }
