@@ -3,16 +3,21 @@ package io.katamari.env;
 import java.util.Map;
 import java.util.HashMap;
 
-import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.buffer.ByteBuf;
 
-public class Request extends DefaultHttpRequest {
+public class Request extends DefaultFullHttpRequest {
   private final Map<String,String> params = new HashMap<String,String>();
   private String path;
 
   public Request(HttpVersion httpVersion, HttpMethod method, String uri) {
     super(httpVersion, method, uri);
+  }
+
+  public Request(HttpVersion httpVersion, HttpMethod method, String uri, ByteBuf content) {
+    super(httpVersion, method, uri, content);
   }
 
   public String getPath() {
