@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.channel.ChannelOption;
 
 import io.katamari.ServerPipeline;
+import io.katamari.handler.RequestDecoder;
 import io.katamari.handler.EnvInitializer;
 import io.katamari.handler.HelloWorld;
 
@@ -31,7 +32,7 @@ public class Server {
           public void initChannel(SocketChannel ch) throws Exception {
             ChannelPipeline pipeline = ch.pipeline();
 
-            pipeline.addLast("netty:decoder", new HttpRequestDecoder());
+            pipeline.addLast("katamari:decoder", new RequestDecoder());
             pipeline.addLast("netty:aggregator", new HttpObjectAggregator(1048576));
             pipeline.addLast("netty:encoder", new HttpResponseEncoder());
 
