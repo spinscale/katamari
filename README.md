@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/nmerouze/katamari.png)](http://travis-ci.org/nmerouze/katamari)
+
 # Katamari (塊) Polyglot Asynchronous Web Server and Middleware Framework
 
 Katamari is a Web Server and a Middleware Framework inspired by Rack (Ruby), Connect.js (Node.js), WSGI (Python) and Ring (Clojure). The asynchronous part is handled by [Netty](http://netty.io). And it is polyglot: written in Java with bindings for other languages (currently only Ruby).

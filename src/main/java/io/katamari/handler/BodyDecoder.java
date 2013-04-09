@@ -1,23 +1,19 @@
 package io.katamari.handler;
 
-import static org.jboss.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
-import static org.jboss.netty.handler.codec.http.HttpMethod.*;
+import static io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
+import static io.netty.handler.codec.http.HttpMethod.*;
 
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import org.jboss.netty.handler.codec.http.multipart.InterfaceHttpData;
-import org.jboss.netty.handler.codec.http.multipart.Attribute;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.codec.http.multipart.Attribute;
 
 import io.katamari.Env;
+import io.katamari.handler.InboundMessageHandler;
 
-public class BodyDecoder extends SimpleChannelUpstreamHandler {
+public class BodyDecoder extends InboundMessageHandler {
   @Override
-  public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-    Env env = (Env)e.getMessage();
-
+  public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     if (env.getRequest().getMethod() == POST || env.getRequest().getMethod() == PUT || env.getRequest().getMethod() == PATCH) {
       HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(env.getRequest());
 
@@ -29,12 +25,6 @@ public class BodyDecoder extends SimpleChannelUpstreamHandler {
       }
     }
 
-    ctx.sendUpstream(e);
-  }
-
-  @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-    e.getCause().printStackTrace();
-    e.getChannel().close();
+    ctx.nextInboundMessageBuffer();
   }
 }

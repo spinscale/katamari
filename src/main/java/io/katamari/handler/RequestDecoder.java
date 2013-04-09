@@ -1,10 +1,9 @@
 package io.katamari.handler;
 
-import org.jboss.netty.channel.LifeCycleAwareChannelHandler;
-import org.jboss.netty.handler.codec.http.HttpMessage;
-import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpMessage;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpRequestDecoder;
 
 import io.katamari.env.Request;
 

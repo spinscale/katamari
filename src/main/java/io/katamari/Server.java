@@ -1,21 +1,17 @@
 package io.katamari;
 
-import static org.jboss.netty.channel.Channels.*;
-
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ChannelHandler;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
-import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.channel.ChannelOption;
 
 import io.katamari.ServerPipeline;
-import io.katamari.handler.NoPipelining;
 import io.katamari.handler.RequestDecoder;
 import io.katamari.handler.EnvInitializer;
 import io.katamari.handler.HelloWorld;
@@ -23,33 +19,36 @@ import io.katamari.handler.HelloWorld;
 public class Server {
   private final ServerBootstrap bootstrap;
 
-  public Server(int port, final ServerPipeline sp) {
-    this.bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
+  public Server(int port, final ServerPipeline sp) throws Exception {
+    this.bootstrap = new ServerBootstrap();
 
-    bootstrap.setOption("child.tcpNoDelay", true);
-    bootstrap.setOption("child.keepAlive", true);
+    try {
+      bootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
+        .channel(NioServerSocketChannel.class)
+        .childOption(ChannelOption.TCP_NODELAY, true)
+        .childOption(ChannelOption.SO_KEEPALIVE, true)
+        .childHandler(new ChannelInitializer<SocketChannel>() {
+          @Override
+          public void initChannel(SocketChannel ch) throws Exception {
+            ChannelPipeline pipeline = ch.pipeline();
 
-    bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-      public ChannelPipeline getPipeline() throws Exception {
-        ChannelPipeline pipeline = pipeline();
+            pipeline.addLast("katamari:decoder", new RequestDecoder());
+            pipeline.addLast("netty:aggregator", new HttpObjectAggregator(1048576));
+            pipeline.addLast("netty:encoder", new HttpResponseEncoder());
 
-        pipeline.addLast("katamari:decoder", new RequestDecoder());
-        pipeline.addLast("netty:aggregator", new HttpChunkAggregator(65536));
-        pipeline.addLast("netty:encoder", new HttpResponseEncoder());
+            pipeline.addLast("katamari:env_initializer", new EnvInitializer());
 
-        pipeline.addLast("katamari:no_pipelining", new NoPipelining());
-        pipeline.addLast("katamari:env_initializer", new EnvInitializer());
-        
-        sp.populate(pipeline);
+            sp.populate(pipeline);
+          }
+        });
 
-        return pipeline;
-      }
-    });
-
-    bootstrap.bind(new InetSocketAddress(port));
+      bootstrap.bind(port).sync().channel().closeFuture().sync();
+    } finally {
+      bootstrap.shutdown();
+    }
   }
 
-  public static void main(String [] args) {
+  public static void main(String [] args) throws Exception {
     new Server(8080, new ServerPipeline() {
       public void populate(ChannelPipeline pipeline) {
         pipeline.addLast("hello_world", new HelloWorld());

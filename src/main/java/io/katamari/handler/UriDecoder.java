@@ -4,32 +4,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.List;
 
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.QueryStringDecoder;
 
 import io.katamari.Env;
+import io.katamari.handler.InboundMessageHandler;
 
-public class UriDecoder extends SimpleChannelUpstreamHandler {
+public class UriDecoder extends InboundMessageHandler {
   @Override
-  public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-    Env env = (Env)e.getMessage();
-
+  public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     QueryStringDecoder decoder = new QueryStringDecoder(env.getRequest().getUri());
-    env.getRequest().setPath(decoder.getPath());
+    env.getRequest().setPath(decoder.path());
 
-    for (Map.Entry<String, List<String>> entry: decoder.getParameters().entrySet()) {
+    for (Map.Entry<String, List<String>> entry: decoder.parameters().entrySet()) {
       env.getRequest().setParam((String)entry.getKey(), (String)entry.getValue().get(0));
     }
 
-    ctx.sendUpstream(e);
-  }
-
-  @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-    e.getCause().printStackTrace();
-    e.getChannel().close();
+    ctx.nextInboundMessageBuffer();
   }
 }

@@ -1,7 +1,7 @@
 package io.katamari.env;
 
-import static org.jboss.netty.handler.codec.http.HttpVersion.*;
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
+import static io.netty.handler.codec.http.HttpVersion.*;
+import static io.netty.handler.codec.http.HttpResponseStatus.*;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -10,32 +10,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
-import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpChunkTrailer;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.util.CharsetUtil;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultHttpContent;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.util.CharsetUtil;
 
 public class Response {
-  private Channel channel;
+  private ChannelHandlerContext context;
   private DefaultHttpResponse headResponse;
   private Map<String,String> trailers = new HashMap<String,String>();
   private boolean headersSent = false;
   public  boolean sendDate = true;
 
-  public Response(Channel channel) {
-    this.channel = channel;
+  public Response(ChannelHandlerContext ctx) {
+    this.context = ctx;
     this.headResponse = new DefaultHttpResponse(HTTP_1_1, OK);
-    if (sendDate) { headResponse.setHeader("Date", getUtcDateTime()); }
-    headResponse.setHeader("Connection", "keep-alive");
-    headResponse.setHeader("Transfer-Encoding", "chunked");
+    if (sendDate) { headResponse.headers().set("Date", getUtcDateTime()); }
+    headResponse.headers().set("Connection", "keep-alive");
+    headResponse.headers().set("Transfer-Encoding", "chunked");
   }
 
   public int getStatusCode() {
-    return headResponse.getStatus().getCode();
+    return headResponse.getStatus().code();
   }
 
   public void setStatusCode(int statusCode) throws HeadersAlreadySentException {
@@ -44,27 +44,27 @@ public class Response {
   }
 
   public void writeContinue() {
-    channel.write(new DefaultHttpResponse(HTTP_1_1, CONTINUE));
+    context.nextOutboundMessageBuffer().add(new DefaultHttpResponse(HTTP_1_1, CONTINUE));
   }
 
   public void setHeader(String name, String value) throws HeadersAlreadySentException {
     if (headersSent) { throw new HeadersAlreadySentException(); }
-    headResponse.setHeader(name, value);
+    headResponse.headers().set(name, value);
   }
 
   public String getHeader(String name) {
-    return headResponse.getHeader(name);
+    return headResponse.headers().get(name);
   }
 
   public void removeHeader(String name) throws HeadersAlreadySentException {
     if (headersSent) { throw new HeadersAlreadySentException(); }
-    headResponse.removeHeader(name);
+    headResponse.headers().remove(name);
   }
 
   public void writeHead(int statusCode) throws HeadersAlreadySentException {
     setStatusCode(statusCode);
     if (!sendDate) { removeHeader("Date"); }
-    channel.write(headResponse);
+    context.nextOutboundMessageBuffer().add(headResponse);
     headersSent = true;
   }
 
@@ -82,7 +82,7 @@ public class Response {
 
   public void write(String data, Charset encoding) throws HeadersAlreadySentException {
     if (!headersSent) { writeHead(getStatusCode()); }
-    channel.write(new DefaultHttpChunk(ChannelBuffers.copiedBuffer(data, encoding)));
+    context.nextOutboundMessageBuffer().add(new DefaultHttpContent(Unpooled.copiedBuffer(data, encoding)));
   }
 
   public void end() throws HeadersAlreadySentException {
@@ -97,12 +97,12 @@ public class Response {
     if (!headersSent) { writeHead(getStatusCode()); }
     if (data != null) { write(data, encoding); }
 
-    HttpChunkTrailer chunkTrailer = new DefaultHttpChunkTrailer();
+    LastHttpContent lastContent = new DefaultLastHttpContent();
     for (Map.Entry<String,String> trailer: trailers.entrySet()) {
-      chunkTrailer.addHeader((String)trailer.getKey(), (String)trailer.getValue());
+      lastContent.trailingHeaders().set((String)trailer.getKey(), (String)trailer.getValue());
     }
     
-    channel.write(chunkTrailer);
+    context.nextOutboundMessageBuffer().add(lastContent);
   }
 
   public void addTrailers(Map<String,String> headers) {
