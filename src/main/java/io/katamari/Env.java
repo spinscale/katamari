@@ -3,18 +3,19 @@ package io.katamari;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 
+import io.katamari.env.Request;
 import io.katamari.env.Response;
 
 public class Env {
-  private final DefaultFullHttpRequest request;
+  private final Request request;
   private final Response response;
 
   public Env(ChannelHandlerContext ctx, DefaultFullHttpRequest msg) {
-    this.request = msg;
+    this.request = new Request(msg.getProtocolVersion(), msg.getMethod(), msg.getUri());
     this.response = new Response(ctx);
   }
 
-  public DefaultFullHttpRequest getRequest() {
+  public Request getRequest() {
     return request;
   }
 

@@ -15,4 +15,10 @@ public class InboundMessageHandler extends ChannelInboundMessageHandlerAdapter<E
   public void endMessageReceived(ChannelHandlerContext ctx) throws Exception {
     ctx.flush();
   }
+
+  @Override
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    cause.printStackTrace();
+    ctx.close();
+  }
 }

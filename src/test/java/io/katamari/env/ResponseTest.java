@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.runner.RunWith;
 import org.junit.Before;
@@ -54,7 +53,7 @@ public class ResponseTest {
 
   @Test
   public void setHeadersWhileWritingHead() throws HeadersAlreadySentException {
-    Map<String, String> headers = new HashMap<String, String>();
+    HashMap<String, String> headers = new HashMap<String, String>();
     headers.put("Foo", "bar");
     response.writeHead(200, headers);
     assertEquals("bar", response.getHeader("Foo"));
