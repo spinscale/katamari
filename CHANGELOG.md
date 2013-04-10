@@ -1,6 +1,11 @@
-# 0.1.4 SNAPSHOT
+# 0.2.1 SNAPSHOT
 
-* Refactoring of the Response class
+* [#6] Fix BodyDecoder and UriDecoder
+
+# 0.2.0 (13/04/09)
+
+* [#1] Migrate to Netty 4
+* [#5] Update the API
 
 # 0.1.3 (13/02/07)
 

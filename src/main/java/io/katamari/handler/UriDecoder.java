@@ -20,6 +20,7 @@ public class UriDecoder extends InboundMessageHandler {
       env.getRequest().setParam((String)entry.getKey(), (String)entry.getValue().get(0));
     }
 
-    ctx.nextInboundMessageBuffer();
+    ctx.nextInboundMessageBuffer().unfoldAndAdd(env);
+    ctx.fireInboundBufferUpdated();
   }
 }

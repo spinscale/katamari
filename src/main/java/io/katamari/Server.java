@@ -14,6 +14,8 @@ import io.netty.channel.ChannelOption;
 import io.katamari.ServerPipeline;
 import io.katamari.handler.RequestDecoder;
 import io.katamari.handler.EnvInitializer;
+import io.katamari.handler.BodyDecoder;
+import io.katamari.handler.UriDecoder;
 import io.katamari.handler.HelloWorld;
 
 public class Server {
@@ -51,6 +53,8 @@ public class Server {
   public static void main(String [] args) throws Exception {
     new Server(8080, new ServerPipeline() {
       public void populate(ChannelPipeline pipeline) {
+        pipeline.addLast("uri_decoder", new UriDecoder());
+        pipeline.addLast("body_decoder", new BodyDecoder());
         pipeline.addLast("hello_world", new HelloWorld());
       }
     });

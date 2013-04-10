@@ -25,6 +25,7 @@ public class BodyDecoder extends InboundMessageHandler {
       }
     }
 
-    ctx.nextInboundMessageBuffer();
+    ctx.nextInboundMessageBuffer().unfoldAndAdd(env);
+    ctx.fireInboundBufferUpdated();
   }
 }

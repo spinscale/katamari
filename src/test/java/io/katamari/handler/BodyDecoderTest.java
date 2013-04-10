@@ -19,6 +19,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.buffer.MessageBuf;
 
 import io.katamari.Env;
 import io.katamari.env.Request;
@@ -27,10 +28,19 @@ import io.katamari.handler.BodyDecoder;
 @RunWith(MockitoJUnitRunner.class)
 public class BodyDecoderTest {
   @Mock private ChannelHandlerContext context;
+  @Mock private MessageBuf<Object> buf;
 
   private BodyDecoder handler = new BodyDecoder();
   private DefaultFullHttpRequest request = new DefaultFullHttpRequest(HTTP_1_1, POST, "/path?id=1", Unpooled.copiedBuffer("foo=bar", CharsetUtil.UTF_8));
   private Env env = new Env(context, request);
+
+  @Before
+  public void initialize() {
+    MockitoAnnotations.initMocks(this);
+    when(context.nextInboundMessageBuffer()).thenReturn(buf);
+    when(buf.unfoldAndAdd(anyObject())).thenReturn(true);
+    when(context.fireInboundBufferUpdated()).thenReturn(context);
+  }
 
   @Test
   public void exposesBodyParamsInRequest() throws Exception {
