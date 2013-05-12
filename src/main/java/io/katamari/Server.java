@@ -1,5 +1,6 @@
 package io.katamari;
 
+import io.katamari.handler.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -12,11 +13,6 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.channel.ChannelOption;
 
 import io.katamari.ServerPipeline;
-import io.katamari.handler.RequestDecoder;
-import io.katamari.handler.EnvInitializer;
-import io.katamari.handler.BodyDecoder;
-import io.katamari.handler.UriDecoder;
-import io.katamari.handler.HelloWorld;
 
 public class Server {
   private final ServerBootstrap bootstrap;
@@ -55,6 +51,7 @@ public class Server {
       public void populate(ChannelPipeline pipeline) {
         pipeline.addLast("uri_decoder", new UriDecoder());
         pipeline.addLast("body_decoder", new BodyDecoder());
+        pipeline.addLast("auth_decoder", new AuthDecoder("/auth.*", "admin", "secret"));
         pipeline.addLast("hello_world", new HelloWorld());
       }
     });

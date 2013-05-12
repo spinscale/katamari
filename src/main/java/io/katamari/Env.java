@@ -12,6 +12,7 @@ public class Env {
 
   public Env(ChannelHandlerContext ctx, DefaultFullHttpRequest msg) {
     this.request = new Request(msg.getProtocolVersion(), msg.getMethod(), msg.getUri(), msg.data());
+    this.request.headers().add(msg.headers());
     this.response = new Response(ctx);
   }
 
