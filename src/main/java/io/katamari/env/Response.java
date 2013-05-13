@@ -103,6 +103,7 @@ public class Response {
     }
     
     context.nextOutboundMessageBuffer().add(lastContent);
+    context.flush();
   }
 
   public void addTrailers(Map<String,String> headers) {
@@ -124,15 +125,15 @@ public class Response {
     }
 
     public HeadersAlreadySentException(String msg) {
-        super(msg);
+      super(msg);
     }
 
     public HeadersAlreadySentException(Throwable cause) {
-        super(cause);
+      super(cause);
     }
 
     public HeadersAlreadySentException(String msg, Throwable cause) {
-        super(msg, cause);
+      super(msg, cause);
     }
   }
 }

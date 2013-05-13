@@ -71,7 +71,6 @@ public class AuthDecoder extends InboundMessageHandler {
     env.getResponse().setHeader(WWW_AUTHENTICATE, "Basic realm==\"auth\"");
     env.getResponse().setStatusCode(403);
     env.getResponse().end();
-    ctx.flush();
   }
 
 }

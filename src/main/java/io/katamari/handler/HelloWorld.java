@@ -10,9 +10,4 @@ public class HelloWorld extends InboundMessageHandler {
   public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     env.getResponse().end("Hello World");
   }
-
-  @Override
-  public void endMessageReceived(ChannelHandlerContext ctx) throws Exception {
-    ctx.flush();
-  }
 }
