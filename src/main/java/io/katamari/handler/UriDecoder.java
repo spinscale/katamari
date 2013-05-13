@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.List;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelHandlerUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
 import io.katamari.Env;
@@ -20,7 +21,6 @@ public class UriDecoder extends InboundMessageHandler {
       env.getRequest().setParam((String)entry.getKey(), (String)entry.getValue().get(0));
     }
 
-    ctx.nextInboundMessageBuffer().unfoldAndAdd(env);
-    ctx.fireInboundBufferUpdated();
+    nextHandler(ctx, env);
   }
 }

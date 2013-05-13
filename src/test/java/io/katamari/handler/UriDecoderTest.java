@@ -36,8 +36,7 @@ public class UriDecoderTest {
   public void initialize() {
     MockitoAnnotations.initMocks(this);
     when(context.nextInboundMessageBuffer()).thenReturn(buf);
-    when(buf.unfoldAndAdd(anyObject())).thenReturn(true);
-    when(context.fireInboundBufferUpdated()).thenReturn(context);
+    when(buf.add(anyObject())).thenReturn(true);
   }
 
   @Test

@@ -56,13 +56,9 @@ public class AuthDecoder extends InboundMessageHandler {
         requireAuth(ctx, env);
         return;
       }
-
-      ctx.nextInboundMessageBuffer().unfoldAndAdd(env);
-      ctx.fireInboundBufferUpdated();
-    } else {
-      ctx.nextInboundMessageBuffer().unfoldAndAdd(env);
-      ctx.fireInboundBufferUpdated();
     }
+
+    nextHandler(ctx, env);
   }
 
   @Override
