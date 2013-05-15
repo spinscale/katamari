@@ -12,7 +12,13 @@ import io.katamari.Env;
 import io.katamari.handler.InboundMessageHandler;
 
 public class BodyDecoder extends InboundMessageHandler {
+
   @Override
+  public String getName() {
+    return "body";
+  }
+
+    @Override
   public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     if (env.getRequest().getMethod() == POST || env.getRequest().getMethod() == PUT || env.getRequest().getMethod() == PATCH) {
       HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(env.getRequest());

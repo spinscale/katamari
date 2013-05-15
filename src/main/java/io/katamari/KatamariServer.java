@@ -1,6 +1,7 @@
 package io.katamari;
 
 import io.katamari.handler.EnvInitializer;
+import io.katamari.handler.InboundMessageHandler;
 import io.katamari.handler.RequestDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -16,7 +17,7 @@ import java.util.List;
 public class KatamariServer {
 
     private int port;
-    private final List<ChannelHandler> channelHandlers = new LinkedList<ChannelHandler>();
+    private final List<InboundMessageHandler> inboundMessageHandlers = new LinkedList<InboundMessageHandler>();
 
     public KatamariServer(int port) {
         this.port = port;
@@ -43,8 +44,8 @@ public class KatamariServer {
                             pipeline.addLast("katamari:env_initializer", new EnvInitializer());
 
                             // TODO: Maybe check for dups here?
-                            for (ChannelHandler channelHandler : channelHandlers) {
-                                pipeline.addLast(channelHandler);
+                            for (InboundMessageHandler inboundMessageHandler : inboundMessageHandlers) {
+                                pipeline.addLast(inboundMessageHandler.getName(), inboundMessageHandler);
                             }
                         }
                     });
@@ -57,8 +58,8 @@ public class KatamariServer {
         return this;
     }
 
-    public KatamariServer add(ChannelHandler channelHandler) {
-        channelHandlers.add(channelHandler);
+    public KatamariServer add(InboundMessageHandler inboundMessageHandler) {
+        inboundMessageHandlers.add(inboundMessageHandler);
         return this;
     }
 }

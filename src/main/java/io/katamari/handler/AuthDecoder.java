@@ -26,7 +26,12 @@ public class AuthDecoder extends InboundMessageHandler {
     this.decoder = new BASE64Decoder();
   }
 
-  @Override
+    @Override
+    public String getName() {
+        return "basic-auth";
+    }
+
+    @Override
   public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     Request request = env.getRequest();
     if (pattern.matcher(request.getPath()).matches()) {

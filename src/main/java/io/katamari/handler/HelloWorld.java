@@ -6,6 +6,12 @@ import io.katamari.Env;
 import io.katamari.handler.InboundMessageHandler;
 
 public class HelloWorld extends InboundMessageHandler {
+
+  @Override
+  public String getName() {
+    return "hello-world-response";
+  }
+
   @Override
   public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     env.getResponse().end("Hello World");
