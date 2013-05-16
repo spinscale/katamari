@@ -4,7 +4,7 @@
   <groupId>io.katamari</groupId>
   <artifactId>katamari</artifactId>
   <packaging>jar</packaging>
-  <version>0.2.2</version>
+  <version>0.2.3-SNAPSHOT</version>
   <name>katamari</name>
   <url>http://maven.apache.org</url>
   <dependencies>
