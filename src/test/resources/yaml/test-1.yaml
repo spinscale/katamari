@@ -1,0 +1,34 @@
+foo: bar
+l2:
+  l31: key
+  l32: value
+  l33:
+    - a
+    - b
+    - c
+
+numbers:
+  float: 2.65
+  double: 2.67
+  integer: 2432
+  long: 2435453453
+
+time:
+  minutes: 5m
+  days:    10d
+
+bytes:
+  some: 24mb
+
+sizes:
+  some: 100k
+
+boolean:
+  shouldBeTrue: true
+  shouldBeFalse: false
+  shouldBeOn: on
+  shouldBeOff: off
+  shouldBeNo: no
+  shouldBeYes: yes
+  shouldBe0: 0
+  shouldBe1: 1
