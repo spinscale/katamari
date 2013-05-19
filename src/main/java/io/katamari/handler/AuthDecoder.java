@@ -30,7 +30,7 @@ public class AuthDecoder extends InboundMessageHandler {
   @Override
   public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     Request request = env.getRequest();
-    if (pattern.matcher(request.getPath()).matches()) {
+    if (pattern.matcher(request.getUri()).matches()) {
       HttpHeaders headers = request.headers();
       if (!headers.contains(AUTHORIZATION)) {
         requireAuth(ctx, env);
