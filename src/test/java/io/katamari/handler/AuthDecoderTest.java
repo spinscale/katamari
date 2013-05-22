@@ -9,6 +9,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
 import io.katamari.Env;
+import io.katamari.settings.Settings;
 import io.netty.buffer.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
@@ -29,7 +30,8 @@ public class AuthDecoderTest {
 
   private Env env;
 
-  private final AuthDecoder handler = new AuthDecoder(".*", "user", "pass");
+  private final Settings settings = new Settings.SettingsBuilder().put("user", "user").put("pass", "pass").build();
+  private final AuthDecoder handler = new AuthDecoder(".*", settings);
   private final DefaultFullHttpRequest request = new DefaultFullHttpRequest(HTTP_1_1, GET, "/foo");
   private final BASE64Encoder base64Encoder = new BASE64Encoder();
 

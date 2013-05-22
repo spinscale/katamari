@@ -6,6 +6,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.WWW_AUTHENTICATE;
 import io.katamari.Env;
 import io.katamari.env.Request;
 import io.katamari.env.Response;
+import io.katamari.settings.Settings;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaders;
 import sun.misc.BASE64Decoder;
@@ -19,10 +20,10 @@ public class AuthDecoder extends InboundMessageHandler {
   private final String password;
   private final BASE64Decoder decoder;
 
-  public AuthDecoder(String pathRegex, String username, String password) {
+  public AuthDecoder(String pathRegex, Settings settings) {
     this.pattern = Pattern.compile(pathRegex);
-    this.username = username;
-    this.password = password;
+    this.username = settings.getAsString("user", "admin");
+    this.password = settings.getAsString("pass", "secret");
     this.decoder = new BASE64Decoder();
   }
 
