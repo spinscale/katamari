@@ -1,6 +1,18 @@
-# 0.2.1 SNAPSHOT
+# 0.2.3 SNAPSHOT
+
+* [#15] Add possibility of loading settings 
+* Update to Netty 4.0.0.CR3
+
+# 0.2.2 (13/05/16)
+
+* [#11] Added support for HTTP headers, with a sample for basic auth
+* Trigger ctx.flush() in Response#end
+* Update to Netty 4.0.0.CR2
+
+# 0.2.1 (13/04/21)
 
 * [#6] Fix BodyDecoder and UriDecoder
+* Update to Netty 4.0.0.CR1
 
 # 0.2.0 (13/04/09)
 
