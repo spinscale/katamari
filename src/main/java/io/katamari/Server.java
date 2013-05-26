@@ -7,18 +7,20 @@ import io.katamari.settings.types.ByteSizeUnit;
 import io.katamari.settings.types.ByteSizeValue;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.channel.ChannelOption;
-
-import io.katamari.ServerPipeline;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Server {
   private final ServerBootstrap bootstrap;
+  private Logger logger = LoggerFactory.getLogger(getClass());
+
 
   public Server(final Settings settings, final ServerPipeline sp) throws Exception {
     this.bootstrap = new ServerBootstrap();
@@ -42,6 +44,8 @@ public class Server {
             pipeline.addLast("katamari:env_initializer", new EnvInitializer());
 
             sp.populate(pipeline);
+
+            logger.info("Configured pipeline: {}", pipeline.names());
           }
         });
 
@@ -55,7 +59,7 @@ public class Server {
     Settings settings = null;
     try {
       Settings.load(Server.class.getResourceAsStream("/config.yml"));
-    } catch (SettingsException e) {
+    } catch (Exception e) {
       settings = new Settings.SettingsBuilder().build();
     }
 
