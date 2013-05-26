@@ -1,0 +1,230 @@
+Katamari - A netty based middleware
+===================================
+Nicolas Merouze & Alexander Reelsen
+v1.0, 2013-05
+:doctype: book
+
+This document will give you a short introduction into link:Katamari[http://github.com/mreouze/katamari], a web middleware based on link:http://netty.io/[JBoss Netty].
+
+What is a middleware?
+---------------------
+
+Most importantly, a middleware is not a web framework. A middleware enables you to write a web framework and makes it easy for you to implement generic functionality without repeating yourself.
+
+Samples for existing middlewares are link:https://github.com/rack/rack[rack], link:http://www.senchalabs.org/connect/[connect.js], link:https://github.com/ring-clojure/ring[ring] or link:http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface[WSGI].
+
+
+Netty as an application development framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+link:http://netty.io/[JBoss Netty] was chosen as the foundation for the middleware. Why? Because it is a high speed, asynchronous, evented network framework, which already has great support for the HTTP protocol.
+Also, the newest Netty 4 was chosen as a framework. Documentation is available link:here[http://netty.io/4.0/guide/].
+
+Async I/O as a solution
+^^^^^^^^^^^^^^^^^^^^^^^
+
+In order to circumvent the link:http://en.wikipedia.org/wiki/C10k[C10k] problem, asynchronous I/O has been used solve it, like link:http://nginx.org/[nginx] or link:http://nodejs.org/[node.js]. As most java based web frameworks still use the old one-thread per connection model, concurrent long running applications are hard to write. Netty helps a lot, but is pretty raw, where as other web frameworks are not very flexible as they try to be complete frameworks.
+Katamari tries to be pretty flexible in order to give you some building blocks, which you can assemble arbitrary in order to write high performance web applications.
+
+
+Understanding the workflow
+--------------------------
+
+In order to understand how Katamari is working, it is good to be aware of the link:http://en.wikipedia.org/wiki/Chain-of-responsibility_pattern[Chain of responsibility pattern].
+
+With Katamari you create a HTTP server consisting of a pipeline. This pipeline consists an arbitrary amount of `InboundMessageHandler` interfaces. On an incoming request, every HTTP request is is handed over to each `InboundMessageHandler`. Each `InboundMessageHandler` decides, if it does nothing this request (rendering a response or parsing some data), throws an exception and decides if the next `InboundMessageHandler` interface in the chain should get the message at all.
+
+
+
+Polyglot bindings to other languages
+------------------------------------
+
+Ruby
+~~~~
+
+Checkout the link:https://github.com/nmerouze/katamari-ruby[ruby bindings].
+
+
+
+
+Configuration
+-------------
+
+In order to allow as easy configuration as possible, we chose the YAML format for configuration and created a `Settings` class which can easily parse values.
+
+You can create a configuration file like this
+
+[source,txt]
+----
+http:
+  port: 8080
+
+auth:
+  enabled: off
+  user: admin
+  pass: secret
+----
+
+It is quite easy to load settings from a file. There is also an option to load it from a classpath resource.
+
+[source,java]
+----
+Settings settings = Settings.load("/path/to/config.yml");
+
+settings.getAsString("auth.user")
+// this access the same property, but you can return an own settings class  
+// with specific settings only
+settings.getComponent("auth").getAsString("user")
+
+// return an int with a default value
+settings.getAsInt("http.port", 8080)
+
+// bools
+settings.getAsBoolean("auth.enabled", false)
+
+// date
+settings.getAsTimeValue("http.timeout", defaultVal).milliSeconds()
+
+// byte sizes
+settings.getAsBytesSize("http.max.length", null).bytes()
+----
+
+
+
+
+HTTP configuration
+~~~~~~~~~~~~~~~~~~
+
+[options="header"]
+|=======
+|Name | Default value| Description
+|http.port |8080 | The port to start the service
+|http.max.length | 10mb | The maximum size of a HTTP request
+|=======
+
+
+
+Starting up a server
+--------------------
+
+[source,java]
+----
+public static void main(String [] args) throws Exception {
+  Settings settings = null;
+  try {
+    Settings.load(Server.class.getResourceAsStream("/config.yml"));
+  } catch (SettingsException e) {
+    settings = new Settings.SettingsBuilder().build();
+  }
+
+  final Settings finalSettings = settings;
+  new Server(settings, new ServerPipeline() {
+    public void populate(ChannelPipeline pipeline) {
+      pipeline.addLast("uri_decoder", new UriDecoder());
+      pipeline.addLast("body_decoder", new BodyDecoder());
+      pipeline.addLast("auth_decoder", new AuthDecoder("/auth.*", finalSettings.componentSettings("auth")));
+      pipeline.addLast("hello_world", new HelloWorld());
+    }
+  });
+}
+----
+
+Existing handlers
+-----------------
+
+UriDecoder
+~~~~~~~~~~
+
+This handler fills the `Request` object with the parameters from the URI.
+
+
+BodyDecoder
+~~~~~~~~~~~
+
+This handler fills the `Request` object with parameters read from the body (for example when using a POST call).
+
+
+AuthDecoder
+~~~~~~~~~~~
+
+This handler implements a very basic HTTP authentication. It simply returns a HTTP 403 response and ends the request instead of forwarding it to the next handler, if the authentication requirements do not match.
+
+
+Creating own handlers
+---------------------
+
+It is pretty easy to implement own handlers. Simply extend the `InboundMessageHandler` class.
+
+[source,java]
+----
+public class HelloWorld extends InboundMessageHandler {
+  @Override
+  public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
+    env.getResponse().end("Hello World");
+    // alternatively call
+    // nextHandler(ctx, env);
+  }
+
+  @Override
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    // return some HTTP error code or log something special
+  }
+}
+----
+
+Do not block the event loop
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The most important thing you have to make sure in your application is not to block the event loop of netty. In case one of your handlers is long running, you should give it an own executor. Please check the example in the link:http://netty.io/4.0/guide/#faq.4[netty documentation].
+
+
+Logging
+-------
+
+Logging is implemented using link:http://logback.qos.ch/[logback] and therefore uses slf4j as a facade.
+
+[source,java]
+----
+private Logger logger = LoggerFactory.getLogger(getClass());
+
+public void foo() {
+  logger.info("Logging this: {}", yourVariable);
+}
+----
+
+
+
+Testing
+-------
+
+Katamari comes with a test class, you can easily extend from. The `KatamariTest` class features a `configure()` method which allows you to add all the handlers needed for your test in order to test a single handler. The class also has a few, but growing helper methods to execute HTTP tests as easy as possible. See the sample class below:
+
+[source,java]
+----
+public class AuthDecoderTest extends KatamariTest {
+  
+  private final Settings settings = new Settings.SettingsBuilder().put("user", "user").put("pass", "pass").build();
+  private final BASE64Encoder base64Encoder = new BASE64Encoder();
+
+  @Override
+  public void configure() {
+    addHandler("auth:decoder", new AuthDecoder(".*", settings));
+    addHandler("any:response", new HelloWorld());
+  }
+
+  @Test
+  public void testThatAuthIsDeniedWithWrongUser() throws Exception {
+    Request request = GET().addHeader("Authorization", encodeBasicAuth("noUser", "pass")).build();
+    Response response = sendRequest(request);
+    assertIsForbidden(response);
+  }
+
+  @Test
+  public void testThatAuthIsAllowedWithValidUserAndPass() throws Exception {
+    Request request = GET().addHeader("Authorization", encodeBasicAuth("user", "pass")).build();
+    Response response = sendRequest(request);
+    assertIsOk(response);
+  }
+
+}
+----
