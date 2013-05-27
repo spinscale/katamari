@@ -11,6 +11,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Server {
   private final ServerBootstrap bootstrap;
@@ -18,6 +20,7 @@ public class Server {
   private Thread thread;
   private NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
   private Boolean isStarted = Boolean.FALSE;
+  private Logger logger = LoggerFactory.getLogger(getClass());
 
   public Server(final Settings settings, final ServerPipeline sp) throws Exception {
     this.bootstrap = new ServerBootstrap();
@@ -37,13 +40,12 @@ public class Server {
           ByteSizeValue defaultMaxLength = new ByteSizeValue(10, ByteSizeUnit.MB);
           int maxSize = settings.getAsBytesSize("http.max.length", defaultMaxLength).bytesAsInt();
           pipeline.addLast("netty:aggregator", new HttpObjectAggregator(maxSize));
-
           pipeline.addLast("netty:encoder", new HttpResponseEncoder());
           pipeline.addLast("katamari:env_initializer", new EnvInitializer());
-
+          
           sp.populate(pipeline);
 
-          System.out.println("PIPELINE: " + pipeline.names());
+          logger.info("Configured pipeline: {}", pipeline.names());
         }
       });
   }
