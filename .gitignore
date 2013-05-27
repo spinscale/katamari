@@ -9,3 +9,4 @@ target
 .settings
 .idea
 katamari.iml
+doc/*.html
