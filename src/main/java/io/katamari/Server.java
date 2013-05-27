@@ -2,52 +2,55 @@ package io.katamari;
 
 import io.katamari.handler.*;
 import io.katamari.settings.Settings;
-import io.katamari.settings.SettingsException;
 import io.katamari.settings.types.ByteSizeUnit;
 import io.katamari.settings.types.ByteSizeValue;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.channel.ChannelOption;
-
-import io.katamari.ServerPipeline;
+import io.netty.handler.codec.http.HttpResponseEncoder;
 
 public class Server {
   private final ServerBootstrap bootstrap;
+  private final Settings settings;
+  private Thread thread;
+  private NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
+  private Boolean isStarted = Boolean.FALSE;
 
   public Server(final Settings settings, final ServerPipeline sp) throws Exception {
     this.bootstrap = new ServerBootstrap();
+    this.settings = settings;
 
-    try {
-      bootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
-        .channel(NioServerSocketChannel.class)
-        .childOption(ChannelOption.TCP_NODELAY, true)
-        .childOption(ChannelOption.SO_KEEPALIVE, true)
-        .childHandler(new ChannelInitializer<SocketChannel>() {
-          @Override
-          public void initChannel(SocketChannel ch) throws Exception {
-            ChannelPipeline pipeline = ch.pipeline();
+    bootstrap.group(nioEventLoopGroup)
+      .channel(NioServerSocketChannel.class)
+      .childOption(ChannelOption.TCP_NODELAY, true)
+      .childOption(ChannelOption.SO_KEEPALIVE, true)
+      .childHandler(new ChannelInitializer<SocketChannel>() {
+        @Override
+        public void initChannel(SocketChannel ch) throws Exception {
+          ChannelPipeline pipeline = ch.pipeline();
 
-            pipeline.addLast("katamari:decoder", new RequestDecoder());
-            ByteSizeValue defaultMaxLength = new ByteSizeValue(10, ByteSizeUnit.MB);
-            int maxSize = settings.getAsBytesSize("http.max.length", defaultMaxLength).bytesAsInt();
-            pipeline.addLast("netty:aggregator", new HttpObjectAggregator(maxSize));
-            pipeline.addLast("netty:encoder", new HttpResponseEncoder());
+          pipeline.addLast("katamari:decoder", new RequestDecoder());
 
-            pipeline.addLast("katamari:env_initializer", new EnvInitializer());
+          ByteSizeValue defaultMaxLength = new ByteSizeValue(10, ByteSizeUnit.MB);
+          int maxSize = settings.getAsBytesSize("http.max.length", defaultMaxLength).bytesAsInt();
+          pipeline.addLast("netty:aggregator", new HttpObjectAggregator(maxSize));
 
-            sp.populate(pipeline);
-          }
-        });
+          pipeline.addLast("netty:encoder", new HttpResponseEncoder());
+          pipeline.addLast("katamari:env_initializer", new EnvInitializer());
 
-      bootstrap.bind(settings.getAsInt("http.port", 8080)).sync().channel().closeFuture().sync();
-    } finally {
-      bootstrap.shutdown();
+          sp.populate(pipeline);
+
+          System.out.println("PIPELINE: " + pipeline.names());
+        }
+      });
+  }
+
+  public void shutdown() {
+    if (thread != null) {
+      thread.interrupt();
     }
   }
 
@@ -55,12 +58,12 @@ public class Server {
     Settings settings = null;
     try {
       Settings.load(Server.class.getResourceAsStream("/config.yml"));
-    } catch (SettingsException e) {
+    } catch (Exception e) {
       settings = new Settings.SettingsBuilder().build();
     }
 
     final Settings finalSettings = settings;
-    new Server(settings, new ServerPipeline() {
+    Server server = new Server(settings, new ServerPipeline() {
       public void populate(ChannelPipeline pipeline) {
         pipeline.addLast("uri_decoder", new UriDecoder());
         pipeline.addLast("body_decoder", new BodyDecoder());
@@ -68,5 +71,36 @@ public class Server {
         pipeline.addLast("hello_world", new HelloWorld());
       }
     });
+    server.start();
   }
+
+  public void start() {
+    thread = new Thread(new Runnable() {
+      public void run() {
+        try {
+          bootstrap.bind(settings.getAsInt("http.port", 8080)).sync().addListener(new ChannelFutureListener() {
+            public void operationComplete(ChannelFuture future) throws Exception {
+              System.out.println("### COMPLETE");
+              isStarted = Boolean.TRUE;
+            }
+          }).channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+          isStarted = false;
+        } finally {
+          nioEventLoopGroup.shutdownGracefully();
+        }
+      }
+    });
+    thread.setDaemon(false);
+    thread.start();
+  }
+
+  public void waitForStart() {
+    while (!isStarted) {
+      try {
+        Thread.sleep(20);
+      } catch (InterruptedException e) {}
+    }
+  }
+
 }
