@@ -1,23 +1,23 @@
-Katamari - A netty based middleware
-===================================
+Katamari - A netty based middleware library
+===========================================
 Nicolas Merouze & Alexander Reelsen
 v1.0, 2013-05
 :doctype: book
 
-This document will give you a short introduction into link:Katamari[http://github.com/mreouze/katamari], a web middleware based on link:http://netty.io/[JBoss Netty].
+This document will give you a short introduction into link:Katamari[http://github.com/nmerouze/katamari], a web middleware based on link:http://netty.io/[JBoss Netty].
 
 What is a middleware?
 ---------------------
 
-Most importantly, a middleware is not a web framework. A middleware enables you to write a web framework and makes it easy for you to implement generic functionality without repeating yourself.
+Most importantly, a middleware is not a web framework. Middlewares enable you to write a web framework and makes it easy for you to implement generic functionality without repeating yourself.
 
-Samples for existing middlewares are link:https://github.com/rack/rack[rack], link:http://www.senchalabs.org/connect/[connect.js], link:https://github.com/ring-clojure/ring[ring] or link:http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface[WSGI].
+Samples for existing middleware libraries are link:https://github.com/rack/rack[rack], link:http://www.senchalabs.org/connect/[connect.js], link:https://github.com/ring-clojure/ring[ring] or link:http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface[WSGI].
 
 
 Netty as an application development framework
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-link:http://netty.io/[JBoss Netty] was chosen as the foundation for the middleware. Why? Because it is a high speed, asynchronous, evented network framework, which already has great support for the HTTP protocol.
+link:http://netty.io/[JBoss Netty] was chosen as the foundation for the library. Why? Because it is a high speed, asynchronous, evented network framework, which already has great support for the HTTP protocol.
 Also, the newest Netty 4 was chosen as a framework. Documentation is available link:here[http://netty.io/4.0/guide/].
 
 Async I/O as a solution
