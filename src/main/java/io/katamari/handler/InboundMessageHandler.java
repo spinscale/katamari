@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerUtil;
 import io.katamari.Env;
 
 public class InboundMessageHandler extends ChannelInboundMessageHandlerAdapter<Env> {
-  @Override
+
   public void messageReceived(ChannelHandlerContext ctx, Env env) throws Exception {
     ctx.fireInboundBufferUpdated();
   }
@@ -16,7 +16,6 @@ public class InboundMessageHandler extends ChannelInboundMessageHandlerAdapter<E
     return ChannelHandlerUtil.addToNextInboundBuffer(ctx, env);
   }
 
-  @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
     cause.printStackTrace();
     ctx.close();

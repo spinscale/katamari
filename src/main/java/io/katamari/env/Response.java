@@ -5,11 +5,9 @@ import static io.netty.handler.codec.http.HttpResponseStatus.*;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
+import com.google.common.collect.Lists;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultHttpContent;
@@ -25,6 +23,7 @@ public class Response {
   private Map<String,String> trailers = new HashMap<String,String>();
   private boolean headersSent = false;
   public  boolean sendDate = true;
+  private List<ResponseSendListener> responseSendListeners = Lists.newArrayListWithCapacity(2);
 
   public Response(ChannelHandlerContext ctx) {
     this.context = ctx;
@@ -94,6 +93,9 @@ public class Response {
   }
 
   public void end(String data, Charset encoding) throws HeadersAlreadySentException {
+    for (ResponseSendListener responseSendListener : responseSendListeners) {
+      responseSendListener.execute();
+    }
     if (!headersSent) { writeHead(getStatusCode()); }
     if (data != null) { write(data, encoding); }
 
@@ -116,6 +118,14 @@ public class Response {
     SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
     dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     return dateFormat.format(new Date());
+  }
+
+  public void beforeSend(ResponseSendListener responseSendListener) {
+    responseSendListeners.add(responseSendListener);
+  }
+
+  public static interface ResponseSendListener {
+    void execute();
   }
 
   public static class HeadersAlreadySentException extends Exception {
