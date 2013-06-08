@@ -57,11 +57,16 @@ public class Server {
   }
 
   public static void main(String [] args) throws Exception {
-    Settings settings = null;
-    try {
-      Settings.load(Server.class.getResourceAsStream("/config.yml"));
-    } catch (Exception e) {
-      settings = new Settings.SettingsBuilder().build();
+    Settings settings = new Settings.SettingsBuilder().build();
+
+    if (args.length > 0 && "-h".equals(args[0])) {
+      System.out.println("Usage: java -jar katamari.jar config.yml");
+      System.out.println("");
+      System.exit(0);
+    }
+    if (args.length > 0) {
+      // first argument is the config file
+      settings = Settings.load(args[0]);
     }
 
     final Settings finalSettings = settings;
@@ -80,9 +85,10 @@ public class Server {
     thread = new Thread(new Runnable() {
       public void run() {
         try {
-          bootstrap.bind(settings.getAsInt("http.port", 8080)).sync().addListener(new ChannelFutureListener() {
+          final Integer port = settings.getAsInt("http.port", 8080);
+          bootstrap.bind(port).sync().addListener(new ChannelFutureListener() {
             public void operationComplete(ChannelFuture future) throws Exception {
-              System.out.println("### COMPLETE");
+              logger.info("Bound to port {}", port);
               isStarted = Boolean.TRUE;
             }
           }).channel().closeFuture().sync();

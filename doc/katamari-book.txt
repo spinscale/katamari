@@ -228,3 +228,61 @@ public class AuthDecoderTest extends KatamariTest {
 
 }
 ----
+
+Building a far jar for deployment
+---------------------------------
+
+Deployment is one of the most critical steps in your go-live process and should therefore be as easy as possible. Instead of having to checkout the versioning system, everything should be delivered in a self-contained archive and easy to run. As Katamari is luckily not based on a servlet container, you have to create this archive yourself. However this is very easy with maven, using the link:http://maven.apache.org/plugins/maven-shade-plugin/[shade plugin].
+
+[source,xml]
+----
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>1.6</version>
+      <configuration>
+        <createDependencyReducedPom>true</createDependencyReducedPom>
+        <filters>
+          <filter>
+            <artifact>*:*</artifact>
+            <excludes>
+              <exclude>META-INF/*.SF</exclude>
+              <exclude>META-INF/*.DSA</exclude>
+              <exclude>META-INF/*.RSA</exclude>
+            </excludes>
+          </filter>
+        </filters>
+      </configuration>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <transformers>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <mainClass>io.katamari.Server</mainClass>
+              </transformer>
+            </transformers>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
+</build>
+----
+
+The only change you have to do is the to change the `mainClass` parameter to the class you defined your `main()` method.
+
+Now you can startup your katamari based application like this
+
+[source,shell]
+----
+java -jar katamari-service.jar 
+----
+
+
